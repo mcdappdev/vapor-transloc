@@ -13,10 +13,15 @@ struct TranslocService: Service {
     /// Fetches the next arrival estimate for the given stop
     ///
     /// - Parameter stop: The desired `stop_id`
+    /// - Parameter route: The desired `route_id`
     /// - Returns: `TranslocData` which also contains the `name` of the stop, if available
     /// - Throws: Decoding errors
-    func time(for stop: String, agency: String = "32") throws -> Future<TranslocData> {
-        let url = baseUrl(for: .estimates, agency: agency) + "&stops=" + stop
+    func time(for stop: String, agency: String = "32", route: String) throws -> Future<TranslocData> {
+        
+        ///Add another pararmeter here--
+        let url = baseUrl(for: .estimates, agency: agency) + "&stops=" + stop + "&routes=" + route
+        
+        print(url)
 
         let nameFuture = try name(for: stop)
         let estimateFuture = client.get(url, headers: headers())
@@ -47,6 +52,8 @@ struct TranslocService: Service {
         return headers
     }
     
+    
+    //This is where the url is made going to modfiy functions above and then its incorperated into url call
     private func baseUrl(for endpoint: Endpoint, agency: String) -> String {
         return "https://transloc-api-1-2.p.mashape.com/\(endpoint.rawValue).json?agencies=\(agency)&callback=call"
     }
