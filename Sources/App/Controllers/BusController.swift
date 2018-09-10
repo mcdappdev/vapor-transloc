@@ -19,8 +19,9 @@ final class BusController: RouteCollection {
     func getBusData(req: Request) throws -> Future<DataResponse> {
         let transloc = try req.make(TranslocService.self)
         let stopId = try req.parameters.next(String.self)
+        let route  = try req.query.get(String.self, at: "route")
         
-        return try transloc.time(for: stopId).map { translocData in
+        return try transloc.time(for: stopId, route: route).map { translocData in
             guard let nextArrival = translocData.data.data.first?.arrivals.first?.arrival_at else {
                 return DataResponse(fullDate: nil, time: nil, sentence: "No date available")
             }
